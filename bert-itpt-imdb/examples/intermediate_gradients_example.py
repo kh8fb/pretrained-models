@@ -124,7 +124,6 @@ def main(model_path, n_steps=50):
     big screen. I definitely want more."""
 
     input_ids, token_type_ids, attention_mask = prepare_input(sequence, tokenizer)
-    print(model.forward(input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask))
 
     # create a baseline of zeros in the same shape as the inputs
     baseline_ids = torch.zeros(input_ids.shape, dtype=torch.int64)
@@ -138,11 +137,6 @@ def main(model_path, n_steps=50):
                                                     additional_forward_args=(model, token_type_ids, attention_mask),
                                                     n_steps=n_steps)
     
-    """lig = LayerIntegratedGradients(sequence_forward_func, model.bert.embeddings)
-    start_grads, start_step_sizes = lig.attribute(inputs=input_ids,
-                                                baselines=baseline_ids,
-                                                additional_forward_args=(model, token_type_ids, attention_mask),
-                                                return_convergence_delta=True)"""
     print("Shape of the returned gradients: ")
     print(start_grads.shape)
     print("Shape of the step sizes: ")
