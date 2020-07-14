@@ -35,7 +35,7 @@ def main(
     result = get_prediction(str(sequence_string), str(model_path), cuda)
     if result == 0:
         print("Negative sentiment")
-    elif result ==1:
+    elif result == 1:
         print("Positive sentiment")
 
 

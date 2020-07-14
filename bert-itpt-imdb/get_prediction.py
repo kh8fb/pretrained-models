@@ -99,4 +99,3 @@ def get_prediction(sentence, model_path, cuda=True):
     outputs = model(input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
     result = torch.argmax(outputs[0], dim=-1).item()
     return result
-    
