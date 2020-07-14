@@ -41,6 +41,7 @@ def load_model(model_path, device):
     model.eval()
     return model
 
+
 def prepare_input(sentence, tokenizer):
     """
     Tokenizes, truncates, and prepares the input for modeling.
@@ -98,4 +99,5 @@ def get_prediction(sentence, model_path, cuda=True):
     input_ids, token_type_ids, attention_mask = prepare_input(sentence, tokenizer)
     outputs = model(input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
     result = torch.argmax(outputs[0], dim=-1).item()
+    print(outputs[0])
     return result

@@ -8,7 +8,6 @@ from get_prediction import get_prediction
 
 
 @click.command(
-    #may have to remove this help statement
     help="Classifies a passed sequence sentence as positive sentiment or negative sentiment."
 )
 @click.option(
