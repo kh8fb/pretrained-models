@@ -7,7 +7,7 @@ Create a conda environment with the command
     conda create --name pretrained-models python=3.8
 Then install the requirements
 
-     pip install -e requirements.txt
+     pip install -r requirements.txt
 
 Next, download the bert-itpt dataset from Google Drive [here](https://drive.google.com/file/d/1R_7SVjETSHs74ff2ita7PrahcFbM1gZa/view?usp=sharing)
 

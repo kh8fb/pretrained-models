@@ -9,7 +9,7 @@ Scripts for obtaining the results of sentiment analysis with the finetuned BERT 
 This is the command line interface for running sentiment analysis with the pretrained model.
 After downloading the model and activating the conda environment, this can be called with
 
-      python3.8 cli_sentiment.py -m /path/to/model.pth -s "I hated this movie! It was awful!!" --cpu
+      python3.8 cli_sentiment.py -m /path/to/model.pth -s "I hated this movie\! It was awful\!" --cpu
 
 ### get_prediction.py
 Script with function, `get_prediction` that can be imported and utilized in other scripts to quickly obtain the setniment analysis of a sentence.
