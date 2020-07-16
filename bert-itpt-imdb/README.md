@@ -21,3 +21,4 @@ Additionally, you can specify whether the model should run on cuda or cpu.
 
 ### commented_classifier_single_layer.py
 This is the training script for the IMDB dataset.  It works slightly differently by creating InputExample's for each of the IMDB questions that are then passed through the model.
+The data is from [This Google Drive folder](https://drive.google.com/drive/folders/1CUBHa8Ct_G13bTcKlMiKg2cRNnuBECs5) which could be slightly different than the IMDB checkpoint.
