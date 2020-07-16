@@ -19,3 +19,5 @@ Additionally, you can specify whether the model should run on cuda or cpu.
        >>> model_path = "/path/to/model.pth"
        >>> result = get_prediction("I hated this movie! it was awful!!", model_path, cuda=True)
 
+### commented_classifier_single_layer.py
+This is the training script for the IMDB dataset.  It works slightly differently by creating InputExample's for each of the IMDB questions that are then passed through the model.
