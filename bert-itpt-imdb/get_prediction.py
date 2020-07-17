@@ -4,7 +4,8 @@ Script for sentiment analysis prediction on a single sentence by finetuned bert-
 
 from collections import OrderedDict
 import torch
-from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from transformers import BertTokenizer
+from bert_model import BertForSequenceClassification, BertConfig
 
 
 def load_model(model_path, device):
@@ -23,21 +24,10 @@ def load_model(model_path, device):
     model: BertForSequenceClassification
         Model with the loaded pretrained states
     """
-    config = BertConfig(vocab_size=30522, type_vocab_size=2, num_labels=2)
-    model = BertForSequenceClassification(config)
+    config = BertConfig(vocab_size=30522, type_vocab_size=2)
+    model = BertForSequenceClassification(config, 2, [11])
     model_states = torch.load(model_path, map_location=device)
-    bert_model_states = OrderedDict()
-
-    # remove deprecated gamma and beta from weights
-    for state_name in model_states:
-        new_state_name = state_name
-        if "LayerNorm.gamma" in new_state_name:
-            new_state_name = new_state_name.replace("gamma", "weight")
-        if "LayerNorm.beta" in new_state_name:
-            new_state_name = new_state_name.replace("beta", "bias")
-        bert_model_states[new_state_name] = model_states[state_name]
-
-    model.load_state_dict(bert_model_states)
+    model.load_state_dict(model_states)
     model.eval()
     return model
 

@@ -1,4 +1,4 @@
-Scripts for obtaining the results of sentiment analysis with the finetuned BERT model
+Scripts for obtaining the results of sentiment analysis with the finetuned BERT model.  The model and its configuration are stored in bert_model.py.
 
 ## Download the dataset
 [Google Drive with trained BERT model](https://drive.google.com/file/d/1R_7SVjETSHs74ff2ita7PrahcFbM1gZa/view?usp=sharing)
@@ -22,3 +22,14 @@ Additionally, you can specify whether the model should run on cuda or cpu.
 ### commented_classifier_single_layer.py
 This is the training script for the IMDB dataset.  It works slightly differently by creating InputExample's for each of the IMDB questions that are then passed through the model.
 The data is from [This Google Drive folder](https://drive.google.com/drive/folders/1CUBHa8Ct_G13bTcKlMiKg2cRNnuBECs5) which could be slightly different than the IMDB checkpoint.
+
+### bert_model.py
+This file contains the pytorch model setup for the BertForSequenceClassificationModel.
+Create the configuration and load the model with the following commands:
+
+       >>> config = BertConfig(vocab_size=30522, type_vocab_size=2)
+       >>> model = BertForSequenceClassification(config, 2, [11])
+       >>> model_states = torch.load(model_path, map_location=device)
+       >>> model.load_state_dict(model_states)
+
+Note that the HuggingFace BertTransformer that is pretrained at 'bert-large-uncased' can be used to tokenize any inputs to this model.

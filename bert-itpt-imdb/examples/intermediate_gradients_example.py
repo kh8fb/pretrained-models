@@ -9,7 +9,7 @@ from captum.attr import LayerIntegratedGradients
 import click
 from collections import OrderedDict
 from transformers import BertTokenizer
-from modeling_single_layer import BertForSequenceClassification, BertConfig
+from bert_model import BertForSequenceClassification, BertConfig
 import torch
 
 from intermediate_gradients.layer_intermediate_gradients import LayerIntermediateGradients
@@ -33,7 +33,7 @@ def load_deprecated_model(model_path):
         Model with the loaded pretrained states.
     """
     config = BertConfig(vocab_size=30522, type_vocab_size=2)
-    model = BertForSequenceClassification(config, 2)
+    model = BertForSequenceClassification(config, 2, [11])
     model_states = torch.load(model_path, map_location=torch.device("cpu"))
     model.load_state_dict(model_states)
     model.eval()
@@ -132,22 +132,22 @@ def main(model_path, n_steps=50):
     
     # create an instance of layer intermediate gradients based upon the embedding layer
     lig = LayerIntermediateGradients(sequence_forward_func, model.bert.embeddings)
-    start_grads, start_step_sizes = lig.attribute(inputs=input_ids,
+    grads, step_sizes = lig.attribute(inputs=input_ids,
                                                     baselines=baseline_ids,
                                                     additional_forward_args=(model, token_type_ids, attention_mask),
                                                     n_steps=n_steps)
     
     print("Shape of the returned gradients: ")
-    print(start_grads.shape)
+    print(grads.shape)
     print("Shape of the step sizes: ")
-    print(start_step_sizes.shape)
+    print(step_sizes.shape)
 
     # now calculate attributions from the intermediate gradients
 
     # multiply by the step sizes
-    scaled_grads = start_grads.view(n_steps, -1) * start_step_sizes
+    scaled_grads = grads.view(n_steps, -1) * step_sizes
     # reshape and sum along the num_steps dimension
-    scaled_grads = torch.sum(scaled_grads.reshape((n_steps, 1) + start_grads.shape[1:]), dim=0)
+    scaled_grads = torch.sum(scaled_grads.reshape((n_steps, 1) + grads.shape[1:]), dim=0)
     # pass forward the input and baseline ids for reference
     forward_input_ids = model.bert.embeddings.forward(input_ids)
     forward_baseline_ids = model.bert.embeddings.forward(baseline_ids)
@@ -159,14 +159,14 @@ def main(model_path, n_steps=50):
 
     # compare to layer integrated gradients
     layer_integrated = LayerIntegratedGradients(sequence_forward_func, model.bert.embeddings)
-    attrs_start = layer_integrated.attribute(inputs=input_ids,
+    attrs = layer_integrated.attribute(inputs=input_ids,
                                              baselines=baseline_ids,
                                              additional_forward_args=(model, token_type_ids, attention_mask),
                                              n_steps=n_steps,
                                              return_convergence_delta=False)
     print("Attributions from layer integrated gradients: ")
-    print(attrs_start.shape)
-    print(attrs_start)
+    print(attrs.shape)
+    print(attrs)
     
 
 if __name__ == "__main__":
