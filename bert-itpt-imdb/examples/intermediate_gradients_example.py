@@ -132,7 +132,7 @@ def main(model_path, n_steps=50):
     grads, step_sizes = lig.attribute(inputs=input_ids,
                                       baselines=baseline_ids,
                                       additional_forward_args=(model, token_type_ids, attention_mask),
-                                      target=0,
+                                      target=1, # taking attributions of positive attribution output
                                       n_steps=n_steps)
     
     print("Shape of the returned gradients: ")
@@ -159,7 +159,7 @@ def main(model_path, n_steps=50):
     layer_integrated = LayerIntegratedGradients(sequence_forward_func, model.bert.embeddings)
     attrs = layer_integrated.attribute(inputs=input_ids,
                                              baselines=baseline_ids,
-                                             target=0,
+                                             target=1, # taking attributions of positive attribution output
                                              additional_forward_args=(model, token_type_ids, attention_mask),
                                              n_steps=n_steps,
                                              return_convergence_delta=False)
