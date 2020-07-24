@@ -61,13 +61,12 @@ def prepare_input(sentence, tokenizer):
     att_mask: torch.tensor(1, num_ids), dtype=torch.int64
         Tensor to specify attention masking for the model.
     """
-    input_ids = torch.tensor([tokenizer.encode(sentence, padding='max_length')], dtype=torch.int64)
-    if input_ids.shape[1] > 512:
-        input_ids = input_ids[:, :512]
-    tok_type_ids = torch.zeros(input_ids.shape, dtype=torch.int64)
-    att_mask = torch.ones(input_ids.shape, dtype=torch.int64)
-    return input_ids, tok_type_ids, att_mask
+    features = tokenizer([sentence], return_tensors='pt', padding=True, truncation=True, max_length=512)
 
+    input_ids = features["input_ids"]
+    token_type_ids = features["token_type_ids"]
+    attention_mask = features["attention_mask"]
+    return input_ids, token_type_ids, attention_mask
 
 def sequence_forward_func(inputs, model, tok_type_ids, att_mask):
     """
@@ -89,7 +88,7 @@ def sequence_forward_func(inputs, model, tok_type_ids, att_mask):
         Output classifications for the model.
     """
     outputs = model(inputs, token_type_ids=tok_type_ids, attention_mask=att_mask)
-    return outputs[0]
+    return outputs
 
 
 @click.command(help="""Run intermediate gradients on a predetermined input and baseline tensor 
@@ -128,14 +127,13 @@ def main(model_path, n_steps=50):
     # create a baseline of zeros in the same shape as the inputs
     baseline_ids = torch.zeros(input_ids.shape, dtype=torch.int64)
     
-    #change following to intermediate gradients
-    
     # create an instance of layer intermediate gradients based upon the embedding layer
     lig = LayerIntermediateGradients(sequence_forward_func, model.bert.embeddings)
     grads, step_sizes = lig.attribute(inputs=input_ids,
-                                                    baselines=baseline_ids,
-                                                    additional_forward_args=(model, token_type_ids, attention_mask),
-                                                    n_steps=n_steps)
+                                      baselines=baseline_ids,
+                                      additional_forward_args=(model, token_type_ids, attention_mask),
+                                      target=0,
+                                      n_steps=n_steps)
     
     print("Shape of the returned gradients: ")
     print(grads.shape)
@@ -161,6 +159,7 @@ def main(model_path, n_steps=50):
     layer_integrated = LayerIntegratedGradients(sequence_forward_func, model.bert.embeddings)
     attrs = layer_integrated.attribute(inputs=input_ids,
                                              baselines=baseline_ids,
+                                             target=0,
                                              additional_forward_args=(model, token_type_ids, attention_mask),
                                              n_steps=n_steps,
                                              return_convergence_delta=False)
