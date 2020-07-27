@@ -13,7 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" PyTorch XLNet model.
+""" Modified XLNet model to support Layer Integrated Gradients and Layer Intermediate Gradients.
+
+Set up a layer on the model.transformer.batch_first layer in order to see the effects of word_embeddings.
 """
 
 
@@ -192,6 +194,28 @@ ACT2FN = {"gelu": gelu_new, "relu": torch.nn.functional.relu, "swish": swish}
 XLNetLayerNorm = nn.LayerNorm
 
 
+class XLNetConvertBatchFirst(nn.Module):
+    def __init__(self):
+        super().__init__()
+        pass
+    
+    def forward(self, inputs):
+        """
+        Permute the embeddings that are (len, batch_size, embeddings) to (batch_size, len, embeddings)
+        """
+        return inputs.permute(1, 0, 2)
+        
+class XLNetConvertBatchSecond(nn.Module):
+    def __init__(self):
+        super().__init__()
+        
+    def forward(self, inputs):
+        """
+        Permute the embeddings that are (batch_size, len, embeddings) to (len, batch_size, embeddings)
+        """
+        return inputs.permute(1, 0, 2)
+        
+
 class XLNetRelativeAttention(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -269,10 +293,6 @@ class XLNetRelativeAttention(nn.Module):
         ac = torch.einsum("ibnd,jbnd->bnij", q_head + self.r_w_bias, k_head_h)
 
         # position based attention score
-        #print("rel_attn_core q_head shape: ", q_head.shape)
-        #print("rel_attn_core k_head_r shape: ", k_head_h.shape)
-        #print("rel_attn_core r_r_bias shape: ", self.r_r_bias.shape)
-        #print("rel_attn_core r_r_bias + q_head", (q_head + self.r_r_bias).shape)
         
         bd = torch.einsum("ibnd,jbnd->bnij", q_head + self.r_r_bias, k_head_r)
         bd = self.rel_shift_bnij(bd, klen=ac.shape[3])
@@ -432,10 +452,6 @@ class XLNetRelativeAttention(nn.Module):
             k_head_r = torch.einsum("ibh,hnd->ibnd", r, self.r)
 
             # core attention ops
-            #print("q_head_h shape: ", q_head_h.shape)
-            #print("k_head_h shape: ", k_head_h.shape)
-            #print("v_head_h shape", v_head_h.shape)
-            #print("k_head_r shape: ", k_head_r.shape)
             attn_vec = self.rel_attn_core(
                 q_head_h,
                 k_head_h,
@@ -655,7 +671,10 @@ class XLNetModel(XLNetPreTrainedModel):
         self.mask_emb = nn.Parameter(torch.FloatTensor(1, 1, config.d_model))
         self.layer = nn.ModuleList([XLNetLayer(config) for _ in range(config.n_layer)])
         self.dropout = nn.Dropout(config.dropout)
-
+        
+        self.batch_first = XLNetConvertBatchFirst()
+        self.batch_second = XLNetConvertBatchSecond()
+        
         self.init_weights()
 
     def get_input_embeddings(self):
@@ -816,7 +835,6 @@ class XLNetModel(XLNetPreTrainedModel):
             qlen, bsz = inputs_embeds.shape[0], inputs_embeds.shape[1]
         else:
             raise ValueError("You have to specify either input_ids or inputs_embeds")
-        print("Batch size: ", bsz)
         token_type_ids = token_type_ids.transpose(0, 1).contiguous() if token_type_ids is not None else None
         input_mask = input_mask.transpose(0, 1).contiguous() if input_mask is not None else None
         attention_mask = attention_mask.transpose(0, 1).contiguous() if attention_mask is not None else None
@@ -873,18 +891,12 @@ class XLNetModel(XLNetPreTrainedModel):
             non_tgt_mask = ((attn_mask + non_tgt_mask[:, :, None, None]) > 0).to(attn_mask)
         else:
             non_tgt_mask = None
-        print("input ids shape:", input_ids.shape)
-        print("self.word_embedding(input_ids) shape: ", self.word_embedding(input_ids).shape)
-        #torch.save(input_ids, "/scratch/kh8fb/2020summer_research/trained_models/xlnet_imdb/input_ids.pth")
-        #torch.save(self.word_embedding.weight, "/scratch/kh8fb/2020summer_research/trained_models/xlnet_imdb/word_embeddings_weight.pth")
-        print("word embedding type: ", type(self.word_embedding))
-        #torch.save(self.word_embedding, "/scratch/kh8fb/2020summer_research/trained_models/xlnet_imdb/word_embeddings.pth")
-        # Word embeddings and prepare h & g hidden states
         if inputs_embeds is not None:
             word_emb_k = inputs_embeds
         else:
             word_emb_k = self.word_embedding(input_ids)
-        torch.save(word_emb_k, "/scratch/kh8fb/2020summer_research/trained_models/xlnet_imdb/word_embed_k.pth")
+            word_emb_j = self.batch_first(word_emb_k)
+            word_emb_k = self.batch_second(word_emb_j)
         output_h = self.dropout(word_emb_k)
         if target_mapping is not None:
             word_emb_q = self.mask_emb.expand(target_mapping.shape[0], bsz, -1)
@@ -943,9 +955,6 @@ class XLNetModel(XLNetPreTrainedModel):
                 new_mems = new_mems + (self.cache_mem(output_h, mems[i]),)
             if output_hidden_states:
                 hidden_states.append((output_h, output_g) if output_g is not None else output_h)
-
-            print(("Output_h shape: ", output_h.shape) if output_h is not None else "Output_h shape None")
-            print(("output_g shape: ", output_g.shape) if output_g is not None else "Output_g shape: None")
                 
             outputs = layer_module(
                 output_h,
