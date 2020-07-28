@@ -138,7 +138,7 @@ def main(model_path, n_steps=50):
 
     # instance of layer intermediate gradients based upon the dummy layer representing the embeddings
     lig = LayerIntermediateGradients(sequence_forward_func, model.transformer.batch_first)
-    grads, step_sizes = lig.attribute(inputs=input_ids,
+    grads, step_sizes, intermediates = lig.attribute(inputs=input_ids,
                                       baselines=baseline_ids,
                                       additional_forward_args=(model, token_type_ids, attention_mask),
                                       target=1,
@@ -175,6 +175,9 @@ def main(model_path, n_steps=50):
     print("Attributions from layer integrated gradients: ")
     print(attrs.shape)
     print(attrs)
+
+    print("Intermediate tensor shape: ", intermediates.shape)
+    print("Intermediate tensor: ", intermediates)
     
 
 if __name__ == "__main__":

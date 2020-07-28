@@ -129,7 +129,7 @@ def main(model_path, n_steps=50):
     
     # create an instance of layer intermediate gradients based upon the embedding layer
     lig = LayerIntermediateGradients(sequence_forward_func, model.bert.embeddings)
-    grads, step_sizes = lig.attribute(inputs=input_ids,
+    grads, step_sizes, intermediates = lig.attribute(inputs=input_ids,
                                       baselines=baseline_ids,
                                       additional_forward_args=(model, token_type_ids, attention_mask),
                                       target=1, # taking attributions of positive attribution output
