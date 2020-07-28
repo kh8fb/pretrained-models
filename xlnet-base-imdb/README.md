@@ -25,7 +25,7 @@ The data is from [This Google Drive folder](https://drive.google.com/drive/folde
 
 ### Loading the pretrained model
 
-       >>> model = XLNetForSequenceClassification.from_pretrained()
+       >>> model = XLNetForSequenceClassification.from_pretrained("xlnet-base-cased")
        >>> device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
        >>> model_states = torch.load("/path/to/model.pth", map_location=device)
        >>> model.load_state_dict(model_states)
