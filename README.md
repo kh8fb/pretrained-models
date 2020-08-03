@@ -19,11 +19,12 @@ The following table has the model, proposed accuracy from the paper, and eval ac
 |  [Bert-itpt](https://arxiv.org/pdf/1905.05583.pdf)  | Paper: 98.19, Ours:                | Paper: 95.79, Ours: 95.276              | Paper: N/A, Ours:                       |
 | [XLNet-Large](https://arxiv.org/pdf/1906.08237.pdf) | Paper: 98.63(Large), Ours: (Large) | Paper: 96.79(Large), Ours: (Large)      | Paper: 96.8(Large), Ours: 95.5275(Large) |
 
-## Finetuining datasets
-The IMDB reviews dataset is a benchmark with 25,000 positive movie reviews and 25,000 negative movie reviews.
-The SST dataset is a collection of over 230,000 sentiment parse trees for reviews from rottentomatoes.com.  We train on a smaller subsets of all the reviews where the length of the review is at least 10.
-The YELP reviews dataset is a sample of over a million samples from the Yelp Dataset Challenge in 2015.  There are 560,000 training samples and 38,000 testing samples including both negative and positive sentiments.
-Each model is finetuned on each of these datasets.
+## Datasets used in finetuning
+Each model is finetuned on all 3 of these datasets.
+* The IMDB reviews dataset is a benchmark with 25,000 positive movie reviews and 25,000 negative movie reviews.
+* The SST dataset is a collection of over 230,000 sentiment parse trees for reviews from rottentomatoes.com.  We train on a smaller subsets of all the reviews where the length of the review is at least 10.
+* The YELP reviews dataset is a sample of over a million samples from the Yelp Dataset Challenge in 2015.  There are 560,000 training samples and 38,000 testing samples including both negative and positive sentiments.
+
 
 ## bert-itpt Folder
 BERT model for sentiment analysis finetuned on the IMDB reviews, SST, or Yelp datasets.
