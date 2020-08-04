@@ -15,8 +15,8 @@ The following table has the model, proposed accuracy from the paper, and eval ac
 
 |                                                     | YELP Accuracy                      | IMDB Accuracy                           | SST2 Accuracy                            |
 |-----------------------------------------------------|------------------------------------|-----------------------------------------|------------------------------------------|
-|  [XLNet-Base](https://arxiv.org/pdf/1906.08237.pdf) | Paper: 98.63(Large), Ours: (Base)  | Paper: 96.79(Large), Ours: 95.504(Base) | Paper: 96.8(Large), Ours: 94.44(Base)    |
-|  [Bert-itpt](https://arxiv.org/pdf/1905.05583.pdf)  | Paper: 98.19, Ours:                | Paper: 95.79, Ours: 95.276              | Paper: N/A, Ours:                       |
+|  [XLNet-Base](https://arxiv.org/pdf/1906.08237.pdf) | Paper: 98.63(Large), Ours: 98.0(Base)  | Paper: 96.79(Large), Ours: 95.504(Base) | Paper: 96.8(Large), Ours: 94.44(Base)    |
+|  [Bert-itpt](https://arxiv.org/pdf/1905.05583.pdf)  | Paper: 98.19, Ours: 94.75            | Paper: 95.79, Ours: 95.276              | Paper: N/A, Ours: 92.09                    |
 | [XLNet-Large](https://arxiv.org/pdf/1906.08237.pdf) | Paper: 98.63(Large), Ours: (Large) | Paper: 96.79(Large), Ours: (Large)      | Paper: 96.8(Large), Ours: 95.5275(Large) |
 
 ## Datasets used in finetuning
