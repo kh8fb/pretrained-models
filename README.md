@@ -25,13 +25,15 @@ Each model is finetuned on all 3 of these datasets.
 * The SST dataset is a collection of over 230,000 sentiment parse trees for reviews from rottentomatoes.com.  We train on a smaller subsets of all the reviews where the length of the review is at least 10.
 * The YELP reviews dataset is a sample of over a million samples from the Yelp Dataset Challenge in 2015.  There are 560,000 training samples and 38,000 testing samples including both negative and positive sentiments.
 
+## Model links
+All models can be downloaded from [This Google Drive folder](https://drive.google.com/drive/folders/1KwNZRHwswFu1Nuiz2nvNmBMJ0jnHoA1d?usp=sharing). Specific model links are provided in the README for the following folders:
 
-## bert-itpt Folder
+### bert-itpt Folder
 BERT model for sentiment analysis finetuned on the IMDB reviews, SST, or Yelp datasets.
 In this directory is a script to get the sentiment analysis of a string directly from the command line as well as Google Drive links to the saved model states from finetuning on each of the above datasets.
 Alternatively, a function, `get_prediction`, can be called in any other python script to obtain the model's sentiment prediction of any string. This will return a 1 for positive sentiment or a 0 for negative sentiment predicted by the model.
 
-## xlnet-base Folder
+### xlnet-base Folder
 XLNet Base model for sentiment analysis finetuned on the IMDB reviews, SST, or Yelp datasets.
 In this directory is a script to get the sentiment analysis of a string directly from the command line as well as Google Drive links to the saved model states from finetuning on each of the above datasets.
 Alternatively, a function, `get_prediction`, can be called in any other python script to obtain the model's sentiment prediction of any string. This will return a 1 for positive sentiment or a 0 for negative sentiment predicted by the model.
