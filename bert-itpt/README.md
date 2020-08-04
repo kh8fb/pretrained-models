@@ -14,7 +14,7 @@ Eval accuracy: 92.09
 [The SST dataset can be found here](https://nlp.stanford.edu/sentiment/) and the `train_bert_sst2.py` script was used for finetuning.
 
 ### BERT-ITPT-yelp
-[Google Drive with BERT model trained on YELP]()
+[Google Drive with BERT model trained on YELP](https://drive.google.com/file/d/1h7jmjlPl6KPqVHhQo9FnVpZtg2h-14-7/view?usp=sharing)
 
 Eval accuracy: 94.75
 [The `YELP reviews - polarity` dataset can be found here](https://course.fast.ai/datasets/) and the `train_bert_yelp.py` script was used for finetuning.
