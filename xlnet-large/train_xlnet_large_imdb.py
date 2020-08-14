@@ -1,4 +1,4 @@
-"""Modified finetuning script for BERT-ITPT model on the IMDB dataset."""
+"""Modified finetuning script for XLNet Large model on the IMDB dataset."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -323,7 +323,7 @@ def main():
     parser.add_argument("--init_checkpoint",
                         default=None,
                         type=str,
-                        help="Initial checkpoint (usually from a pre-trained BERT model).")
+                        help="Initial checkpoint (usually from a pre-trained XLNet model).")
     parser.add_argument("--max_seq_length",
                         default=128,
                         type=int,
@@ -530,10 +530,6 @@ def main():
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, token_type_ids, label_ids = batch
-                # print("Input ids shape:", input_ids.shape)
-                # print("Input mask shape:", input_mask.shape)
-                # print("Tok type Ids shape:", segment_ids.shape)
-                # print("Labels shape:", label_ids.shape)
                 loss, _ = model(input_ids, attention_mask=input_mask, token_type_ids=token_type_ids, labels=label_ids)
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.

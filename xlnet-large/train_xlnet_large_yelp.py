@@ -1,4 +1,4 @@
-"""Modified finetuning script for XLNet base model on the IMDB dataset."""
+"""Modified finetuning script for XLNet large model on the YELP dataset."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -37,7 +37,7 @@ class InputExample():
         Unique id for this specific example
     text_a: str
         Untokenized text of the string sequence.  In this case, text_a represents
-        the movie review from the IMDB dataset.
+        the review from the YELP dataset.
     label: int
         Determines whether a review was classified as "good" or "bad".
         Should be specified for training and dev examples but not for testing examples.
@@ -62,9 +62,9 @@ class InputFeatures(object):
         Attention mask for input ids. 1's for the length of the input_ids,
         and 0's for all of the padding inputs.
     segment_ids: torch.tensor(max_seq_length), dtype=torch.int64
-        Token_type_ids to pass to the model. For IMDB, torch.zeros(max_seq_length)
+        Token_type_ids to pass to the model. For YELP, torch.zeros(max_seq_length)
     label_id: int
-        Ground truth label for this example.  For IMDB, 0 for negative review and
+        Ground truth label for this example.  For YELP, 0 for negative review and
         1 for positive review.
     """
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
@@ -107,37 +107,18 @@ class DataProcessor():
         """
         raise NotImplementedError()
 
-    @classmethod
-    def _read_tsv(cls, input_file, quotechar=None):
-        """
-        Reads a tab separated value file.  Doesn't appear to be needed by IMDB dataset.
-
-        Parameters
-        ----------
-        input_file: str
-            Path to tab separated file to read.
-        quotechar: str
-            Character used to quote fields containing special characters.
-        """
-        with open(input_file, "r") as f:
-            reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
-            lines = []
-            for line in reader:
-                lines.append(line)
-            return lines
-
 
 class YELPProcessor(DataProcessor):
     """Processor for the YELP data set. Performs no truncation of sequence strings."""
 
     def get_train_examples(self, data_dir, data_num=None):
-        """Read training CSV and create InputExamples for those values."""
+        """Read training CSV and create InputExamples for the values."""
         train_data = pd.read_csv(os.path.join(data_dir, "train.csv"), delimiter=",", names=["sentiment", "sequence"])
         train_data["sentiment"] = train_data["sentiment"] - 1 # change sentiments to 0 or 1
         return self._create_examples(train_data, "train", data_num=data_num)
 
     def get_dev_examples(self, data_dir, data_num=None):
-        """Read testing CSV and create InputExamples for those values."""
+        """Read testing CSV and create InputExamples for the values."""
         dev_data = pd.read_csv(os.path.join(data_dir, "test.csv"), delimiter=",", names=["sentiment", "sequence"])
         dev_data["sentiment"] = dev_data["sentiment"] - 1 # change sentiments to 0 or 1
         return self._create_examples(dev_data, "dev", data_num=data_num)
@@ -323,7 +304,7 @@ def main():
     parser.add_argument("--init_checkpoint",
                         default=None,
                         type=str,
-                        help="Initial checkpoint (usually from a pre-trained BERT model).")
+                        help="Initial checkpoint (usually from a pre-trained XLNet model).")
     parser.add_argument("--max_seq_length",
                         default=128,
                         type=int,
@@ -640,7 +621,7 @@ def main():
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
             print("Saving model")
-            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "imdb-finetuned-xlnet-model_"+str(epoch)+".pth"))
+            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "yelp-finetuned-xlnet-model_"+str(epoch)+".pth"))
 
 
 if __name__ == "__main__":

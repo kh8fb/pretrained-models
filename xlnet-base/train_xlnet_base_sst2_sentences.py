@@ -62,9 +62,9 @@ class InputFeatures(object):
         Attention mask for input ids. 1's for the length of the input_ids,
         and 0's for all of the padding inputs.
     segment_ids: torch.tensor(max_seq_length), dtype=torch.int64
-        Token_type_ids to pass to the model. For IMDB, torch.zeros(max_seq_length)
+        Token_type_ids to pass to the model. For SST, torch.zeros(max_seq_length)
     label_id: int
-        Ground truth label for this example.  For IMDB, 0 for negative review and
+        Ground truth label for this example.  For SST, 0 for negative review and
         1 for positive review.
     """
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
@@ -107,31 +107,12 @@ class DataProcessor():
         """
         raise NotImplementedError()
 
-    @classmethod
-    def _read_tsv(cls, input_file, quotechar=None):
-        """
-        Reads a tab separated value file.  Doesn't appear to be needed by IMDB dataset.
-
-        Parameters
-        ----------
-        input_file: str
-            Path to tab separated file to read.
-        quotechar: str
-            Character used to quote fields containing special characters.
-        """
-        with open(input_file, "r") as f:
-            reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
-            lines = []
-            for line in reader:
-                lines.append(line)
-            return lines
-
 
 class SSTProcessor(DataProcessor):
     """Processor for the SST dataset. Performs no truncation of sequence strings."""
 
     def get_train_examples(self, data_dir, data_num=None):
-        """Read training CSV and create InputExamples for those values."""
+        """Read training CSV and create InputExamples for the values."""
         tree_list = []
         with open(os.path.join(data_dir, 'train.txt')) as fobj:
             for line in fobj:
@@ -347,7 +328,7 @@ def main():
     parser.add_argument("--init_checkpoint",
                         default=None,
                         type=str,
-                        help="Initial checkpoint (usually from a pre-trained BERT model).")
+                        help="Initial checkpoint (usually from a pre-trained XLNet model).")
     parser.add_argument("--max_seq_length",
                         default=128,
                         type=int,
@@ -553,10 +534,6 @@ def main():
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, token_type_ids, label_ids = batch
-                # print("Input ids shape:", input_ids.shape)
-                # print("Input mask shape:", input_mask.shape)
-                # print("Tok type Ids shape:", segment_ids.shape)
-                # print("Labels shape:", label_ids.shape)
                 loss, _ = model(input_ids, attention_mask=input_mask, token_type_ids=token_type_ids, labels=label_ids)
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.
@@ -664,7 +641,7 @@ def main():
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
             print("Saving model")
-            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "imdb-finetuned-xlnet-model_"+str(epoch)+".pth"))
+            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "sst-sentences-finetuned-xlnet-base-model_"+str(epoch)+".pth"))
 
 
 if __name__ == "__main__":

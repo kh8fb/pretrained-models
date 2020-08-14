@@ -1,4 +1,4 @@
-"""Modified finetuning script for XLNet base model on the IMDB dataset."""
+"""Modified finetuning script for XLNet base model on the YELP dataset."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -37,12 +37,11 @@ class InputExample():
         Unique id for this specific example
     text_a: str
         Untokenized text of the string sequence.  In this case, text_a represents
-        the movie review from the IMDB dataset.
+        the review from the YELP dataset.
     label: int
         Determines whether a review was classified as "good" or "bad".
         Should be specified for training and dev examples but not for testing examples.
     """
-
     def __init__(self, guid, text_a, label=None):
         self.guid = guid
         self.text_a = text_a
@@ -62,9 +61,9 @@ class InputFeatures(object):
         Attention mask for input ids. 1's for the length of the input_ids,
         and 0's for all of the padding inputs.
     segment_ids: torch.tensor(max_seq_length), dtype=torch.int64
-        Token_type_ids to pass to the model. For IMDB, torch.zeros(max_seq_length)
+        Token_type_ids to pass to the model. For YELP, torch.zeros(max_seq_length)
     label_id: int
-        Ground truth label for this example.  For IMDB, 0 for negative review and
+        Ground truth label for this example.  For YELP, 0 for negative review and
         1 for positive review.
     """
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
@@ -323,7 +322,7 @@ def main():
     parser.add_argument("--init_checkpoint",
                         default=None,
                         type=str,
-                        help="Initial checkpoint (usually from a pre-trained BERT model).")
+                        help="Initial checkpoint (usually from a pre-trained XLNet model).")
     parser.add_argument("--max_seq_length",
                         default=128,
                         type=int,
@@ -640,7 +639,7 @@ def main():
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
             print("Saving model")
-            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "imdb-finetuned-xlnet-model_"+str(epoch)+".pth"))
+            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "yelp-finetuned-xlnet-base-model_"+str(epoch)+".pth"))
 
 
 if __name__ == "__main__":

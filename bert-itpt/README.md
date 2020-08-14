@@ -2,19 +2,16 @@ Scripts for obtaining the results of sentiment analysis with finetuned BERT-ITPT
 
 ## Download the model checkpoints
 ### BERT-ITPT-imdb
-[Google Drive with BERT model trained on IMDB](https://drive.google.com/file/d/1R_7SVjETSHs74ff2ita7PrahcFbM1gZa/view?usp=sharing)
 
 Eval accuracy: 95.276
 [The IMDB dataset that was used can be found here](https://drive.google.com/drive/folders/1CUBHa8Ct_G13bTcKlMiKg2cRNnuBECs5) and the `train_bert_imdb.py` script was used for finetuning.
 
 ### BERT-ITPT-sst
-[Google Drive with BERT model trained on SST2](https://drive.google.com/file/d/19gRGkWKA4-pOH-TTQG5wEmA2wwtOOFoi/view?usp=sharing)
 
 Eval accuracy: 92.09
 [The SST dataset can be found here](https://nlp.stanford.edu/sentiment/) and the `train_bert_sst2.py` script was used for finetuning.
 
 ### BERT-ITPT-yelp
-[Google Drive with BERT model trained on YELP](https://drive.google.com/file/d/1h7jmjlPl6KPqVHhQo9FnVpZtg2h-14-7/view?usp=sharing)
 
 Eval accuracy: 94.75
 [The `YELP reviews - polarity` dataset can be found here](https://course.fast.ai/datasets/) and the `train_bert_yelp.py` script was used for finetuning.
