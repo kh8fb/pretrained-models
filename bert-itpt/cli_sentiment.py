@@ -1,5 +1,5 @@
 """
-CLI for sentiment analysis prediction on a single sentence by finetuned bert-itpt-imdb model.
+CLI for sentiment analysis prediction on a single sentence by finetuned BERT-ITPT model.
 """
 
 import click

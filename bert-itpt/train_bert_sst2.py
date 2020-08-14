@@ -1,4 +1,4 @@
-"""Modified finetuning script for XLNet large model on the SST2 dataset."""
+"""Modified finetuning script for BERT-ITPT model on the SST2 dataset."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -39,7 +39,7 @@ class InputExample():
         Unique id for this specific example
     text_a: str
         Untokenized text of the string sequence.  In this case, text_a represents
-        the movie review from the IMDB dataset.
+        the movie review from the SST dataset.
     label: int
         Determines whether a review was classified as "good" or "bad".
         Should be specified for training and dev examples but not for testing examples.
@@ -64,9 +64,9 @@ class InputFeatures(object):
         Attention mask for input ids. 1's for the length of the input_ids,
         and 0's for all of the padding inputs.
     segment_ids: torch.tensor(max_seq_length), dtype=torch.int64
-        Token_type_ids to pass to the model. For IMDB, torch.zeros(max_seq_length)
+        Token_type_ids to pass to the model. For SST, torch.zeros(max_seq_length)
     label_id: int
-        Ground truth label for this example.  For IMDB, 0 for negative review and
+        Ground truth label for this example.  For SST, 0 for negative review and
         1 for positive review.
     """
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
@@ -171,7 +171,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     max_seq_length: int
         Maximum sequence length for the created inputs. Typically 512.
     tokenizer: tokenizer
-        Instance of the XLNetTokenizer.
+        Instance of the BERTTokenizer.
 
     Returns
     -------
@@ -195,7 +195,6 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     labels_tensor = torch.tensor(all_labels, dtype=torch.long)
     all_example_text = [example.text_a for example in examples]
 
-    # even though XLNet has no max length, the paper suggests using 512
     features = tokenizer(all_example_text, return_tensors='pt', padding=True, truncation=True, max_length=512)
     features['labels'] = labels_tensor
     return features
@@ -596,7 +595,7 @@ def main():
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
             print("Saving model")
-            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "imdb-finetuned-xlnet-model_"+str(epoch)+".pth"))
+            torch.save(model.module.state_dict(), os.path.join(args.output_dir, "sst2-finetuned-bert-model_"+str(epoch)+".pth"))
 
 
 if __name__ == "__main__":
